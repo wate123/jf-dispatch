@@ -189,6 +189,23 @@ docker buildx build --platform linux/amd64,linux/arm64 -t your-registry/jf-dispa
 
 Intel worker 后续可挂载 `/dev/dri`；NVIDIA worker 使用 NVIDIA Container Toolkit 暴露 GPU。`JF_WORKER_ADVERTISE` 必须是 scheduler 能访问的地址，不能在多机部署时写 `127.0.0.1`。
 
+### 一键安装 Docker worker
+
+Linux worker 可以用 `scripts/install-docker-worker.sh` 自动安装 NFS 客户端、持久化挂载、写入安全配置并启动容器。安装器会静默询问集群令牌，再保存到权限为 `0600` 的文件；不要把真实令牌提交到仓库。
+
+```bash
+chmod +x scripts/install-docker-worker.sh
+sudo scripts/install-docker-worker.sh \
+  --id x86-server \
+  --advertise 100.94.54.28:7100 \
+  --scheduler 100.103.1.24:7000 \
+  --nfs-server 192.168.1.237 \
+  --media-export /mnt/user/Media \
+  --transcode-export /mnt/user/transcode
+```
+
+默认使用 CPU。确认端到端正常后，Intel 节点可加 `--gpu intel`，已安装 NVIDIA Container Toolkit 的节点可加 `--gpu nvidia`。脚本可以重复执行；它会更新该节点的挂载配置并重建同名 worker 容器。
+
 ## Jellyfin 接入说明
 
 在正式替换 Jellyfin 的 FFmpeg 前，先完成路径一致性与 demo 验证。wrapper 保持 FFmpeg 的同步语义：日志写到 stderr，成功返回 0，失败或取消返回非零。把 `JF_SCHEDULER_ADDR` 注入 Jellyfin 容器，并将 Jellyfin 的 FFmpeg 路径指向 `jf-ffmpeg-wrapper`。
