@@ -154,6 +154,19 @@ go run ./cmd/jf-ffmpeg-wrapper -f lavfi -i testsrc=size=320x240:rate=10 -t 2 -c:
 
 ## Docker Compose / Unraid
 
+### Unraid Add Container template
+
+The repository publishes `linux/amd64` and `linux/arm64` images to `ghcr.io/wate123/jf-dispatch:latest`. To add the scheduler through the Unraid Docker UI:
+
+```bash
+mkdir -p /boot/config/plugins/dockerMan/templates-user
+curl -fsSL \
+  https://raw.githubusercontent.com/wate123/jf-dispatch/main/unraid/jf-dispatch-scheduler.xml \
+  -o /boot/config/plugins/dockerMan/templates-user/my-jf-dispatch-scheduler.xml
+```
+
+Then open **Docker → Add Container**, select `jf-dispatch-scheduler`, generate a cluster token with `openssl rand -hex 32`, and enter the Unraid Tailscale address as the scheduler address. The template uses host networking and maps `/mnt/user/media` to `/media` and `/mnt/user/transcode` to `/transcode` by default. See `unraid/README.md` for details.
+
 先把 compose 中两个宿主路径替换为真实路径，并保证所有 worker 一致：
 
 ```yaml

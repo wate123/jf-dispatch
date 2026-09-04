@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>jf-dispatch-scheduler</Name>
+  <Repository>ghcr.io/wate123/jf-dispatch:latest</Repository>
+  <Registry>https://github.com/wate123/jf-dispatch/pkgs/container/jf-dispatch</Registry>
+  <Network>host</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/wate123/jf-dispatch/issues</Support>
+  <Project>https://github.com/wate123/jf-dispatch</Project>
+  <Overview>Capability-aware distributed FFmpeg scheduler for Jellyfin. Run this scheduler on Unraid and connect Linux amd64/arm64 workers over Tailscale.</Overview>
+  <Category>MediaApp:Other</Category>
+  <WebUI>http://[IP]:9090/healthz</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/wate123/jf-dispatch/main/unraid/jf-dispatch-scheduler.xml</TemplateURL>
+  <ExtraParams>--pull=always</ExtraParams>
+  <PostArgs>scheduler</PostArgs>
+  <Requires>Unraid host must be connected to the same Tailscale network as the workers. Allow worker-to-scheduler TCP 7000 and scheduler-to-worker TCP 7100.</Requires>
+  <Config Name="Cluster token" Target="JF_CLUSTER_TOKEN" Default="" Mode="" Description="Shared secret used by the scheduler, wrapper, and every worker. Generate with: openssl rand -hex 32" Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="Scheduler address" Target="JF_SCHEDULER_ADDR" Default="home-server:7000" Mode="" Description="Tailscale MagicDNS name or 100.x address that clients use to reach this scheduler." Type="Variable" Display="always" Required="true" Mask="false">home-server:7000</Config>
+  <Config Name="Scheduler listen address" Target="JF_SCHEDULER_LISTEN" Default="0.0.0.0:7000" Mode="" Description="gRPC listen address inside the host-networked container." Type="Variable" Display="advanced" Required="true" Mask="false">0.0.0.0:7000</Config>
+  <Config Name="Metrics listen address" Target="JF_METRICS_LISTEN" Default="0.0.0.0:9090" Mode="" Description="Health and Prometheus endpoint listen address." Type="Variable" Display="advanced" Required="true" Mask="false">0.0.0.0:9090</Config>
+  <Config Name="Media" Target="/media" Default="/mnt/user/media" Mode="ro" Description="Media path. Workers must mount the same content at /media." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/media</Config>
+  <Config Name="Transcode" Target="/transcode" Default="/mnt/user/transcode" Mode="rw" Description="Shared transcode directory. Workers must mount the same content at /transcode." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/transcode</Config>
+</Container>
