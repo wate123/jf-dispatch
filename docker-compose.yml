@@ -1,0 +1,32 @@
+services:
+  scheduler:
+    build: .
+    command: ["scheduler"]
+    environment:
+      JF_CLUSTER_TOKEN: ${JF_CLUSTER_TOKEN:-change-me}
+    ports: ["7000:7000", "9090:9090"]
+    networks: [transcode]
+  worker-cpu:
+    build: .
+    command: ["worker"]
+    environment:
+      JF_CLUSTER_TOKEN: ${JF_CLUSTER_TOKEN:-change-me}
+      JF_WORKER_ID: worker-cpu-01
+      JF_WORKER_ADVERTISE: worker-cpu:7100
+      JF_SCHEDULER_ADDR: scheduler:7000
+    depends_on: [scheduler]
+    volumes:
+      - /mnt/user/media:/media:ro
+      - /mnt/user/transcode:/transcode
+    networks: [transcode]
+  demo:
+    build: .
+    profiles: [demo]
+    environment:
+      JF_CLUSTER_TOKEN: ${JF_CLUSTER_TOKEN:-change-me}
+      JF_SCHEDULER_ADDR: scheduler:7000
+    command: ["ffmpeg", "-f", "lavfi", "-i", "testsrc=size=320x240:rate=10", "-t", "2", "-c:v", "libx264", "-y", "/transcode/demo.mp4"]
+    depends_on: [worker-cpu]
+    volumes: ["/mnt/user/transcode:/transcode"]
+    networks: [transcode]
+networks: {transcode: {}}

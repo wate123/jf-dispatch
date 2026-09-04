@@ -1,0 +1,20 @@
+version: 1
+
+worker:
+  id: auto
+  listen: "0.0.0.0:7100"
+  advertise: auto
+  advertise_via: tailscale
+  scheduler: "home-server:7000"
+  ffmpeg: "/usr/bin/ffmpeg"
+  max_jobs: 1
+  preferred_accelerators: ["nvenc", "qsv", "vaapi", "v4l2m2m", "cpu"]
+
+storage:
+  media_paths: ["/media"]
+  transcode_path: "/transcode"
+
+security:
+  token_file: "/etc/jf-dispatch/cluster-token"
+  allowed_paths: ["/media", "/transcode"]
+  allow_environment: false

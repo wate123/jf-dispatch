@@ -1,0 +1,31 @@
+syntax = "proto3";
+package jfdispatch.v1;
+option go_package = "github.com/example/jf-dispatch/internal/api";
+
+message Empty {}
+message Requirements { string decode_codec = 1; string encode_codec = 2; string hwaccel = 3; bool tone_map = 4; }
+message SubmitRequest { repeated string args = 1; Requirements requirements = 2; map<string,string> env = 3; }
+message Job { string id = 1; string state = 2; string worker_id = 3; repeated string args = 4; Requirements requirements = 5; int32 exit_code = 6; string error = 7; int64 created_unix = 8; int64 updated_unix = 9; }
+message JobRef { string id = 1; }
+message CancelReply { bool accepted = 1; }
+message WorkerCapability { string id = 1; string arch = 2; repeated string hwaccels = 3; repeated string decoders = 4; repeated string encoders = 5; bool dri = 6; bool nvidia = 7; bool tone_map = 8; int32 max_jobs = 9; }
+message WorkerStatus { WorkerCapability capability = 1; int32 active_jobs = 2; double cpu_load = 3; double gpu_load = 4; string address = 5; int64 seen_unix = 6; }
+message RegisterReply { int32 heartbeat_seconds = 1; }
+message HeartbeatReply { bool accepted = 1; }
+message WorkerList { repeated WorkerStatus workers = 1; }
+message RunRequest { Job job = 1; map<string,string> env = 2; }
+message JobEvent { string job_id = 1; string state = 2; string message = 3; int32 exit_code = 4; int64 unix = 5; }
+
+service Scheduler {
+  rpc Submit(SubmitRequest) returns (Job);
+  rpc Get(JobRef) returns (Job);
+  rpc Watch(JobRef) returns (stream JobEvent);
+  rpc Cancel(JobRef) returns (CancelReply);
+  rpc Register(WorkerStatus) returns (RegisterReply);
+  rpc Heartbeat(WorkerStatus) returns (HeartbeatReply);
+  rpc ListWorkers(Empty) returns (WorkerList);
+}
+service Worker {
+  rpc Run(RunRequest) returns (stream JobEvent);
+  rpc Cancel(JobRef) returns (CancelReply);
+}

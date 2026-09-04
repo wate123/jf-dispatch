@@ -1,0 +1,19 @@
+[Unit]
+Description=JF Dispatch %i
+After=network-online.target tailscaled.service remote-fs.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jf-dispatch
+Group=jf-dispatch
+ExecStart=/usr/local/bin/jf-dispatch %i -config /etc/jf-dispatch/%i.yaml
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadOnlyPaths=/media
+ReadWritePaths=/transcode
+
+[Install]
+WantedBy=multi-user.target

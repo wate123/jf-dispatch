@@ -1,0 +1,7 @@
+/jf-scheduler
+/jf-worker
+/jf-ffmpeg-wrapper
+/jf-dispatch
+/configs/local/
+/work/
+*.mp4

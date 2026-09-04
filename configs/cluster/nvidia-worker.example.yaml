@@ -1,0 +1,11 @@
+version: 1
+worker:
+  id: nvidia-worker
+  listen: "0.0.0.0:7100"
+  advertise: "nvidia-worker.example.ts.net:7100"
+  scheduler: "scheduler.example.ts.net:7000"
+  ffmpeg: "/usr/bin/ffmpeg"
+  max_jobs: 4
+  preferred_accelerators: ["nvenc", "cpu"]
+storage: {media_paths: ["/media"], transcode_path: "/transcode"}
+security: {token_file: "/etc/jf-dispatch/cluster-token", allowed_paths: ["/media", "/transcode"]}
