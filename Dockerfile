@@ -11,7 +11,13 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/jf-schedule
     CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/jf-dispatch ./cmd/jf-dispatch
 
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg ca-certificates && rm -rf /var/lib/apt/lists/*
+ARG TARGETARCH
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ffmpeg ca-certificates vainfo mesa-va-drivers && \
+    if [ "$TARGETARCH" = "amd64" ]; then \
+      apt-get install -y --no-install-recommends intel-media-va-driver; \
+    fi && \
+    rm -rf /var/lib/apt/lists/*
 COPY --from=build /out/* /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/jf-dispatch"]
 CMD ["worker"]

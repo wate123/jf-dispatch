@@ -91,7 +91,11 @@ func (w *Worker) Run(r *api.RunRequest, stream grpc.ServerStreamingServer[api.Jo
 			if ctx.Err() != nil {
 				state = api.StateCanceled
 			}
-			ev = api.Event(r.Job.ID, state, fmt.Sprint(e), code)
+			message := ""
+			if e != nil {
+				message = e.Error()
+			}
+			ev = api.Event(r.Job.ID, state, message, code)
 			return stream.Send(&ev)
 		case <-ctx.Done():
 			return ctx.Err()
