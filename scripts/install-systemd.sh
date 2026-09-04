@@ -16,6 +16,9 @@ for group in video render; do
 done
 
 install -m 0755 ./jf-dispatch /usr/local/bin/jf-dispatch
+ln -sf /usr/local/bin/jf-dispatch /usr/local/bin/jf-ffmpeg-wrapper
+ln -sf /usr/local/bin/jf-dispatch /usr/local/bin/jf-scheduler
+ln -sf /usr/local/bin/jf-dispatch /usr/local/bin/jf-worker
 install -d -o jf-dispatch -g jf-dispatch -m 0750 /etc/jf-dispatch
 install -o jf-dispatch -g jf-dispatch -m 0640 "$CONFIG" "/etc/jf-dispatch/$ROLE.yaml"
 if [ ! -f /etc/jf-dispatch/cluster-token ]; then

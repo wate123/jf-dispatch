@@ -31,6 +31,28 @@ import (
 var version = "dev"
 
 func main() {
+	// The installer creates these compatibility links so Jellyfin can invoke the
+	// wrapper as a normal FFmpeg executable without supplying a subcommand.
+	switch filepath.Base(os.Args[0]) {
+	case "jf-ffmpeg-wrapper":
+		if err := runFFmpeg(os.Args[1:]); err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+		return
+	case "jf-scheduler":
+		if err := runScheduler(os.Args[1:]); err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+		return
+	case "jf-worker":
+		if err := runWorker(os.Args[1:]); err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+		return
+	}
 	if len(os.Args) < 2 {
 		usage()
 		os.Exit(2)
@@ -376,5 +398,3 @@ func env(k, d string) string {
 	}
 	return d
 }
-
-var _ = filepath.Clean

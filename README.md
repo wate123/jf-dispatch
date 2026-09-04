@@ -8,6 +8,8 @@
 
 V1.1 提供统一的 `jf-dispatch` 二进制、YAML 配置、环境变量覆盖、Tailscale 地址发现、节点查询、安装诊断、共享令牌和 worker 路径白名单。旧的三个二进制仍然保留，方便平滑迁移。
 
+安装脚本还会创建 `jf-ffmpeg-wrapper`、`jf-scheduler` 和 `jf-worker` 兼容软链接。Jellyfin 可以直接把 FFmpeg 路径设置为 `/usr/local/bin/jf-ffmpeg-wrapper`；该软链接会自动使用 `JF_CONFIG` 指定的配置进入分布式 wrapper 模式。
+
 ```bash
 go build -o jf-dispatch ./cmd/jf-dispatch
 
